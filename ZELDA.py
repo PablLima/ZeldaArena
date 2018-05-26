@@ -136,7 +136,7 @@ class hitAmigo(pygame.sprite.Sprite):
 
 #Varíaveis pré-jogo
 all_sprites = pygame.sprite.Group()
-bullets = pygame.sprite.Group()
+monstros = pygame.sprite.Group()
 hitamigos = pygame.sprite.Group()
 for i in range(8):
     m = Monstros()
@@ -222,7 +222,7 @@ def zelda ():
                 jogador.shoot()
 
         #colocar os objetos na  tela
-        #tela.blit(imagem_fundo, (0, 0))
+        tela.blit(imagem_fundo, (0, 0))
         jogador.colocar(tela)
 
         if len(jogador.listaDisparo) > 0 :
