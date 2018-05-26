@@ -4,8 +4,10 @@ from pygame.locals import *
 # Tamanho da tela
 largura=1200
 altura=640
-#Pede no inicio do jogo se será tela cheia (1) ou janela (0)
-telacheia=int(input())
+# Pede no inicio do jogo se será tela cheia (1) ou janela (0)
+#telacheia=int(input(0))
+# Por enquanto, o padrão é janela
+telacheia=0
 
 class espada (pygame.sprite.Sprite) :
     def __init__(self, posx, posy):
@@ -78,7 +80,7 @@ class link (pygame.sprite.Sprite) :
 
 
     def atacar (self, x, y):
-        minha_espada= espada(x,y)
+        minha_espada= espada (x,y)
         self.listaDisparo.append(minha_espada)
 
 
@@ -134,7 +136,7 @@ def zelda ():
                 #isso ^ é igual a um break
                 #break
 
-        trocatela=False
+
         #movimentação do personagem
         if evento.type == pygame.KEYDOWN:
 
@@ -152,14 +154,24 @@ def zelda ():
             # if evento.key == K_DOWN :
             #     jogador.rect.down += jogador.velocidade
 
+             #movimento cima e baixo FORA DO TUTO
+            if evento.key == K_UP:
+                jogador.rect.top -= jogador.velocidade
+            else:
+                jogador.rect.top += 0
+            if evento.key == K_DOWN :
+                jogador.rect.bottom += jogador.velocidade
+            else:
+                jogador.rect.top += 0
+
 
 
             #ataque
             if evento.key == K_SPACE:
                 x,y = jogador.rect.center
                 jogador.atacar (x,y)
-
-
+                print(jogador.listaDisparo)
+                print(jogador.rect.center[1])
 
 
         #colocar os objetos na  tela
@@ -172,9 +184,9 @@ def zelda ():
                 z.trajetoria()
 
                 #limitar aonde o tiro vai
-                if z.rect.top < 455 :
+                if z.rect.top < (jogador.rect.center[1]-50) :
                     jogador.listaDisparo.remove(z)
-
+                    print(jogador.listaDisparo)
 
 
         pygame.display.update()
