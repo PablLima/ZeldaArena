@@ -4,6 +4,8 @@ from pygame.locals import *
 # Tamanho da tela
 largura=1200
 altura=640
+#Pede no inicio do jogo se será tela cheia (1) ou janela (0)
+telacheia=int(input())
 
 class espada (pygame.sprite.Sprite) :
     def __init__(self, posx, posy):
@@ -76,7 +78,7 @@ class link (pygame.sprite.Sprite) :
 
 
     def atacar (self, x, y):
-        minha_espada= espada (x,y)
+        minha_espada= espada(x,y)
         self.listaDisparo.append(minha_espada)
 
 
@@ -87,11 +89,16 @@ class link (pygame.sprite.Sprite) :
 
     ###QUANDO QUISER BOTAR QUALQUER COMANDO OU AÇÃO FAZER UMA DEF AQUI
 
-
 #começa o game
 def zelda ():
     pygame.init()
-    tela = pygame.display.set_mode((largura,altura))
+
+    #Define se será tela cheia ou janela
+    if telacheia == 0:
+        tela = pygame.display.set_mode((largura,altura))
+    else:
+        tela = pygame.display.set_mode((largura,altura),pygame.FULLSCREEN)
+
     pygame.display.set_caption('ZELDA ARENA')
 
     jogador = link()
@@ -127,7 +134,7 @@ def zelda ():
                 #isso ^ é igual a um break
                 #break
 
-
+        trocatela=False
         #movimentação do personagem
         if evento.type == pygame.KEYDOWN:
 
