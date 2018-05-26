@@ -1,13 +1,19 @@
 import pygame,sys
+import random
 from pygame.locals import *
 
 # Tamanho da tela
 largura=1200
 altura=640
+
 # Pede no inicio do jogo se será tela cheia (1) ou janela (0)
 #telacheia=int(input(0))
 # Por enquanto, o padrão é janela
 telacheia=0
+
+# Variáveis de cores
+RED=(255,255,0)
+YELLOW = (255, 255, 0)
 
 class espada (pygame.sprite.Sprite) :
     def __init__(self, posx, posy):
@@ -79,10 +85,13 @@ class link (pygame.sprite.Sprite) :
     #             self.rect.right = 1200
 
 
-    def atacar (self, x, y):
-        minha_espada= espada (x,y)
-        self.listaDisparo.append(minha_espada)
-
+    #def atacar (self, x, y):
+    #    minha_espada= espada (x,y)
+    #    self.listaDisparo.append(minha_espada)
+    def shoot(self):
+        bullet = Bullet(self.rect.centerx, self.rect.top)
+        all_sprites.add(bullet)
+        bullets.add(bullet)
 
     #para colocar algo na tela
     def colocar(self, superficie) :
@@ -90,7 +99,49 @@ class link (pygame.sprite.Sprite) :
 
 
     ###QUANDO QUISER BOTAR QUALQUER COMANDO OU AÇÃO FAZER UMA DEF AQUI
+class Monstros(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((30,40))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randrange(largura - self.rect.width)
+        self.rect.y = random.randrange(-100, -40)
+        self.speedy = random.randrange(1, 8)
+        self.speedx = random.randrange(-3,3)
 
+    def update(self):
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        if self.rect.top > altura + 10:
+            self.rect.x = random.randrange(largura - self.rect.width)
+            self.rect.y = random.randrange(-100, -40)
+            self.speedy = random.randrange(1, 8)
+
+class hitAmigo(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface ((10, 20))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.rect.botton = y
+        self.rect.centerx = x
+        self.speedy = -10
+
+    def update(self):
+        self.rect.y += self.speedy
+        # se sair fora da tela
+        if self.rect.bottom < 0:
+            self.kill()
+
+#Varíaveis pré-jogo
+all_sprites = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+hitamigos = pygame.sprite.Group()
+for i in range(8):
+    m = Monstros()
+    all_sprites.add(m)
+    monstros.add(m)
 #começa o game
 def zelda ():
     pygame.init()
@@ -168,14 +219,10 @@ def zelda ():
 
             #ataque
             if evento.key == K_SPACE:
-                x,y = jogador.rect.center
-                jogador.atacar (x,y)
-                print(jogador.listaDisparo)
-                print(jogador.rect.center[1])
-
+                jogador.shoot()
 
         #colocar os objetos na  tela
-        tela.blit(imagem_fundo, (0, 0))
+        #tela.blit(imagem_fundo, (0, 0))
         jogador.colocar(tela)
 
         if len(jogador.listaDisparo) > 0 :
