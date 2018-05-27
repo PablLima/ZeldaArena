@@ -5,6 +5,7 @@ from pygame.locals import *
 # Tamanho da tela
 largura=1200
 altura=640
+imagemlink = ['cima.png','baixo.png','esq.png','dir.png']
 
 # Pede no inicio do jogo se será tela cheia (1) ou janela (0)
 #telacheia=int(input(0))
@@ -39,7 +40,7 @@ class espada (pygame.sprite.Sprite) :
 class link (pygame.sprite.Sprite) :
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.imagem_link = pygame.image.load('link.png')
+        self.imagem_link = pygame.image.load(imagemlink[0])
 
         #criando a hitbox
         self.rect = self.imagem_link.get_rect()
@@ -88,10 +89,9 @@ class link (pygame.sprite.Sprite) :
     #def atacar (self, x, y):
     #    minha_espada= espada (x,y)
     #    self.listaDisparo.append(minha_espada)
-    def shoot(self):
-        bullet = Bullet(self.rect.centerx, self.rect.top)
-        all_sprites.add(bullet)
-        bullets.add(bullet)
+    def atacar (self, x, y):
+        minha_espada= espada (x-22,y-75)
+        self.listaDisparo.append(minha_espada)
 
     #para colocar algo na tela
     def colocar(self, superficie) :
@@ -118,30 +118,30 @@ class Monstros(pygame.sprite.Sprite):
             self.rect.y = random.randrange(-100, -40)
             self.speedy = random.randrange(1, 8)
 
-class hitAmigo(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface ((10, 20))
-        self.image.fill(YELLOW)
-        self.rect = self.image.get_rect()
-        self.rect.botton = y
-        self.rect.centerx = x
-        self.speedy = -10
-
-    def update(self):
-        self.rect.y += self.speedy
-        # se sair fora da tela
-        if self.rect.bottom < 0:
-            self.kill()
+# class hitAmigo(pygame.sprite.Sprite):
+#     def __init__(self):
+#         pygame.sprite.Sprite.__init__(self)
+#         self.image = pygame.Surface ((10, 20))
+#         self.image.fill(YELLOW)
+#         self.rect = self.image.get_rect()
+#         self.rect.botton = y
+#         self.rect.centerx = x
+#         self.speedy = -10
+#
+#     def update(self):
+#         self.rect.y += self.speedy
+#         # se sair fora da tela
+#         if self.rect.bottom < 0:
+#             self.kill()
 
 #Varíaveis pré-jogo
-all_sprites = pygame.sprite.Group()
-monstros = pygame.sprite.Group()
-hitamigos = pygame.sprite.Group()
-for i in range(8):
-    m = Monstros()
-    all_sprites.add(m)
-    monstros.add(m)
+# all_sprites = pygame.sprite.Group()
+# monstros = pygame.sprite.Group()
+# hitamigos = pygame.sprite.Group()
+# for i in range(8):
+#     m = Monstros()
+#     all_sprites.add(m)
+#     monstros.add(m)
 #começa o game
 def zelda ():
     pygame.init()
@@ -192,10 +192,12 @@ def zelda ():
         if evento.type == pygame.KEYDOWN:
 
             if evento.key == K_LEFT:
+                jogador.imagem_link = pygame.image.load(imagemlink[2])
                 jogador.rect.left -= jogador.velocidade
 
 
             elif evento.key == K_RIGHT:
+                jogador.imagem_link = pygame.image.load(imagemlink[3])
                 jogador.rect.right += jogador.velocidade
 
              #movimento cima e baixo FORA DO TUTO
@@ -207,10 +209,12 @@ def zelda ():
 
              #movimento cima e baixo FORA DO TUTO
             if evento.key == K_UP:
+                jogador.imagem_link = pygame.image.load(imagemlink[0])
                 jogador.rect.top -= jogador.velocidade
             else:
                 jogador.rect.top += 0
             if evento.key == K_DOWN :
+                jogador.imagem_link = pygame.image.load(imagemlink[1])
                 jogador.rect.bottom += jogador.velocidade
             else:
                 jogador.rect.top += 0
@@ -219,7 +223,8 @@ def zelda ():
 
             #ataque
             if evento.key == K_SPACE:
-                jogador.shoot()
+                x,y = jogador.rect.center
+                jogador.atacar (x,y)
 
         #colocar os objetos na  tela
         tela.blit(imagem_fundo, (0, 0))
