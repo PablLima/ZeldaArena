@@ -4,8 +4,8 @@ import random
 global jogadorcentery
 jogadorcentery = 0
 # Tamanho da tela
-largura=1200
-altura=600
+largura=1280
+altura=720
 
 # CORES PRÉ-DEFINIDAS
 YELLOW = (255, 255, 0)
@@ -20,7 +20,7 @@ tempo = pygame.time.Clock()
 class Monstros(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('ghost.gif')
+        self.image = pygame.image.load('ghost.png')
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(largura - self.rect.width)
         self.rect.y = altura
@@ -57,6 +57,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
         if direcao == "up" and self.rect.centery < jogador.rect.centery - 75:
             self.kill()
+
         # Essa macacagem gera bug na espada pra baixo
         if direcao == "down":
             self.speedy = +20
@@ -85,25 +86,33 @@ class link (pygame.sprite.Sprite) :
             if self.rect.left <= 0 :
               self.rect.left = 0
             #não sair a direita
-            elif self.rect.right >= 1200 :
-                self.rect.right = 1200
+            elif self.rect.right >= 1280 :
+                self.rect.right = 1280
+            # não sair para cima
+            elif self.rect.top >= 530:
+                self.rect.top = 530
+            # não sair a baixo
+            elif self.rect.bottom <= 180:
+                self.rect.bottom = 180
+
+
     #def atacar (self, x, y):
     #    minha_espada= espada (x-22,y-75)
     #    self.listaDisparo.append(minha_espada)
     #para colocar algo na tela
     def shoot(self):
         if direcao == "left":
-            bullet = Bullet(self.rect.centerx - 40, self.rect.centery + 70)
-            bullet.image = pygame.image.load('espada.png')
+            bullet = Bullet(self.rect.centerx - 160, self.rect.centery + 70)
+            bullet.image = pygame.image.load('espada_esq.png')
         if direcao == "right":
             bullet = Bullet(self.rect.centerx + 60, self.rect.centery + 75)
-            bullet.image = pygame.image.load('espada.png')
+            bullet.image = pygame.image.load('espada_dir.png').convert()
         if direcao == "up":
             bullet = Bullet(self.rect.centerx + 10, self.rect.centery + 30)
             bullet.image = pygame.image.load('espada.png')
         if direcao == "down":
             bullet = Bullet(self.rect.centerx, self.rect.centery)
-            bullet.image = pygame.image.load('espada.png')
+            bullet.image = pygame.image.load('espada_baixo.png')
         all_sprites.add(bullet)
         bullets.add(bullet)
     def colocar(self, superficie) :
@@ -160,7 +169,16 @@ class espada (pygame.sprite.Sprite) :
 #começa o game
 global flag
 flag = False
-bullets = pygame.sprite.Group()
+#bullets = pygame.sprite.Group()
+
+# Sons do jogo
+pygame.mixer.music.load('zelda.ogg')
+pygame.mixer.music.play(loops=1)
+
+somespada = pygame.mixer.Sound('sword.wav')
+sommorte = pygame.mixer.Sound('dead2.wav')
+somacerto = pygame.mixer.Sound('hit.wav')
+sompasso = pygame.mixer.Sound('walk.wav')
 def zelda ():
     global direcao
     global bullets
@@ -179,12 +197,12 @@ def zelda ():
     imagem_fundo = pygame.image.load('arena.png')
     #para mudar se algo o fizer parar de jogar
     jogando=True
-    #inimigo = orc (100 ,100 )
+
     #daonde sai a espada
     espada_link = espada (largura / 100 , altura - 150)
 
     #gerar monstros
-    for i in range(8):
+    for i in range(20):
         m = Monstros()
         all_sprites.add(m)
         monstros.add(m)
@@ -207,39 +225,45 @@ def zelda ():
                 #isso ^ é igual a um break
                 #break
                 # movimentação do personagem
+
             if evento.type == pygame.KEYDOWN:
-                if evento.key == K_LEFT:
-                    jogador.imagem_link = pygame.image.load(imagem_link[2])
-                    jogador.rect.left -= jogador.velocidade
-                    # debug
-                    if jogador.rect.left < jogador.rect.left + jogador.velocidade:
-                        direcao = "left"
-                elif evento.key == K_RIGHT:
-                    jogador.imagem_link = pygame.image.load(imagem_link[3])
-                    jogador.rect.right += jogador.velocidade
-                    # debug
-                    if jogador.rect.right > jogador.rect.right - jogador.velocidade:
-                        direcao = "right"
-                elif evento.key == K_UP:
-                    jogador.imagem_link = pygame.image.load(imagem_link[0])
-                    jogador.rect.top -= jogador.velocidade
-                    # debug
-                    if jogador.rect.top < jogador.rect.top + jogador.velocidade:
-                        direcao = "up"
-                elif evento.key == K_DOWN:
-                    jogador.imagem_link = pygame.image.load(imagem_link[1])
-                    jogador.rect.bottom += jogador.velocidade
-                    # debug
-                    if jogador.rect.bottom > jogador.rect.bottom - jogador.velocidade:
-                        direcao = "down"
+                if evento.key == K_LEFT or evento.key == K_RIGHT or evento.key == K_UP or evento.key == K_DOWN:
+                    pygame.mixer.Sound.play(sompasso)
+                    if evento.key == K_LEFT:
+                        jogador.imagem_link = pygame.image.load(imagem_link[2])
+                        jogador.rect.left -= jogador.velocidade
+                        # debug
+                        if jogador.rect.left < jogador.rect.left + jogador.velocidade:
+                            direcao = "left"
+                    elif evento.key == K_RIGHT:
+                        jogador.imagem_link = pygame.image.load(imagem_link[3])
+                        jogador.rect.right += jogador.velocidade
+                        # debug
+                        if jogador.rect.right > jogador.rect.right - jogador.velocidade:
+                            direcao = "right"
+                    elif evento.key == K_UP:
+                        jogador.imagem_link = pygame.image.load(imagem_link[0])
+                        jogador.rect.top -= jogador.velocidade
+                        # debug
+                        if jogador.rect.top < jogador.rect.top + jogador.velocidade:
+                            direcao = "up"
+                    elif evento.key == K_DOWN:
+                        jogador.imagem_link = pygame.image.load(imagem_link[1])
+                        jogador.rect.bottom += jogador.velocidade
+                        # debug
+                        if jogador.rect.bottom > jogador.rect.bottom - jogador.velocidade:
+                            direcao = "down"
                 #ataque
                 elif evento.key == K_SPACE:
                     x,y = jogador.rect.center
                     #jogadorcentery = jogador.rect.centery
                     #print(jogadorcentery)
+                    #if direcao == "down":
+                    #    jogador.speedy = +20
                     jogador.shoot()
-                    first = pygame.time.get_ticks()
-                    print(pygame.time.get_ticks())
+                    #first = pygame.time.get_ticks()
+                    #print(pygame.time.get_ticks())
+                    pygame.mixer.Sound.play(somespada)
                     #jogador.atacar(x,y)
                 elif evento.type == pygame.KEYUP:
                         jogador.rect.top += 0
@@ -262,13 +286,15 @@ def zelda ():
         #Checa colisão
         hits = pygame.sprite.groupcollide(bullets, monstros, True, True)
         for hit in hits:
+            pygame.mixer.Sound.play(somacerto)
             inimigosmortos+=1
             m = Monstros()
             all_sprites.add(m)
             monstros.add(m)
         hits = pygame.sprite.spritecollide(jogador, monstros, False)
         if hits:
-            zelda()
+            pygame.mixer.Sound.play(sommorte)
+            #zelda()
         #hits2 = pygame.sprite.spritecollide(bullets, monstros, True)
     #oq acontece depois de 'morrer'
             #all_sprites.remove(m)
@@ -278,7 +304,7 @@ def zelda ():
         #    print(len(monstros),'monstros restantes.')
         text = font.render(str(inimigosmortos), True, font_color)
         text2 = font.render(str("Combo:"), True, font_color)
-        tela.blit(text, (100, 80))
+        tela.blit(text, (110, 80))
         tela.blit(text2, (50, 40))
 
         all_sprites.update()
